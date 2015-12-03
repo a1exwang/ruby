@@ -1109,11 +1109,13 @@ rb_str_format(int argc, const VALUE *argv, VALUE fmt)
 		if ((flags & FWIDTH) && width > done) {
 		    if (!(flags&FMINUS)) {
 			long i, shifting = (flags&FZERO) ? done - prefix : done;
-			for (i = 1; i <= shifting; i++)
-			    buf[width - i] = buf[done - i];
-			blen -= shifting;
-			FILL((flags&FZERO) ? '0' : ' ', width - done);
-			blen += shifting;
+                        long offset = blen - done;
+                        long delta_shift = width - done;
+			CHECK(delta);
+                        for (i = 1; i <= shifting; i++)
+			    buf[offset + width - i] = buf[offset + done - i];
+                        memset(&buf[offset + prefix], (flags&FZERO ? '0' : ' ', delta);
+			blen += delta;
 		    } else {
 			FILL(' ', width - done);
 		    }
